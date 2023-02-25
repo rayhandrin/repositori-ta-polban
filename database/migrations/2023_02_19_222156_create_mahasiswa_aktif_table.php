@@ -21,6 +21,7 @@ return new class extends Migration
             $table->year('angkatan');
             $table->string('email', 50)->unique();
             $table->string('password', 100);
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
     }
