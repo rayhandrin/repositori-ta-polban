@@ -11,7 +11,7 @@ COPY . /var/www/html
 RUN composer install --no-interaction --no-dev --prefer-dist
 
 # Run database migrations
-RUN php artisan migrate
+RUN php artisan migrate --force
 
 # Expose the port the app runs in
 EXPOSE 80
