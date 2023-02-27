@@ -2,7 +2,7 @@
 FROM bitnami/laravel:9.5.0
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR .
 
 # Copy the application code
 COPY . .
