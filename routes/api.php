@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\DokumenTA;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,5 +23,6 @@ Route::middleware('guest')->prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/dokumen', [DokumenTA::class, 'index'])->name('get-random-document');
     Route::post('/logout', [AuthController::class, 'logout']);
 });
