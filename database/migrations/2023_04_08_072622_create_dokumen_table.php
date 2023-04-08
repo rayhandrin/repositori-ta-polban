@@ -14,15 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('dokumen', function (Blueprint $table) {
-            $table->string('dokumen_1', 50);
-            $table->string('dokumen_2', 50);
-            $table->string('dokumen_3', 50);
-            $table->string('dokumen_4', 50);
-            $table->string('dokumen_opsional_1', 50)->nullable();
-            $table->string('dokumen_opsional_2', 50)->nullable();
-            $table->integer('tugas_akhir_id');
+            $table->string('dokumen_1');
+            $table->string('dokumen_2');
+            $table->string('dokumen_3');
+            $table->string('dokumen_4');
+            $table->string('dokumen_opsional_1')->nullable();
+            $table->string('dokumen_opsional_2')->nullable();
+            $table->unsignedBigInteger('tugas_akhir_id');
 
-            $table->foreign('tugas_akhir_id')->references('id')->on('tugas_akhir')->onDelete('NO ACTION')->onUpdate('NO ACTION');
+            $table->foreign('tugas_akhir_id')->references('id')->on('tugas_akhir')->onDelete('CASCADE')->onUpdate('CASCADE');
         });
     }
 

@@ -37,6 +37,22 @@ class Mahasiswa extends Model
      */
     protected $fillable = ['nim', 'nama', 'program_studi', 'email', 'password', 'status_aktif', 'tugas_akhir_id'];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'status_aktif' => 'boolean'
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['password'];
+
     // * Relationship methods.
 
     public function tugasAkhir()

@@ -19,11 +19,11 @@ return new class extends Migration
             $table->string('program_studi', 70);
             $table->string('email')->unique();
             $table->string('password')->nullable();
-            $table->tinyInteger('status_aktif');
+            $table->boolean('status_aktif')->default(false);
             $table->timestamps();
-            $table->integer('tugas_akhir_id')->nullable();
+            $table->unsignedBigInteger('tugas_akhir_id')->nullable();
 
-            $table->foreign('tugas_akhir_id')->references('id')->on('tugas_akhir')->onDelete('NO ACTION')->onUpdate('NO ACTION');
+            $table->foreign('tugas_akhir_id')->references('id')->on('tugas_akhir')->onDelete('SET NULL')->onUpdate('NO ACTION');
         });
     }
 

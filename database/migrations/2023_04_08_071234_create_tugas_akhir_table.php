@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tugas_akhir', function (Blueprint $table) {
-            $table->integer('id')->primary();
+            $table->id();
             $table->string('judul', 45);
             $table->year('tahun')->nullable();
             $table->string('kata_kunci', 45)->nullable();

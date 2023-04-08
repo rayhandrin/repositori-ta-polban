@@ -37,6 +37,13 @@ class Dokumen extends Model
      */
     protected $fillable = ['dokumen_1', 'dokumen_2', 'dokumen_3', 'dokumen_4', 'dokumen_opsional_1', 'dokumen_opsional_2', 'tugas_akhir_id'];
 
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
     // * Relationship methods.
 
     public function tugasAkhir()
