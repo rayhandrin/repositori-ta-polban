@@ -19,6 +19,7 @@ Route::middleware('guest')->prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
+    Route::post('/verify-otp', [AuthController::class, 'verifyOTP'])->name('password.otp');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 

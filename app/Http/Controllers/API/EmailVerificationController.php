@@ -28,10 +28,10 @@ class EmailVerificationController extends Controller
             }
 
             return response()->json(['message' => 'Email berhasil diverifikasi.']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $t) {
             return response()->json([
                 'message' => 'Email gagal diverifikasi.',
-                'error' => $e->getMessage()
+                'error' => $t->getMessage()
             ], 500);
         }
     }

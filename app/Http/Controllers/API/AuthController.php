@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SendOTP;
 use App\Models\MahasiswaAktif;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
 
@@ -22,7 +26,7 @@ class AuthController extends Controller
             'jurusan' => 'required|string|max:50',
             'program_studi' => 'required|string|max:70',
             'angkatan' => 'required|numeric|digits:4',
-            'email' => 'required|email|unique:mahasiswa_aktif,email|ends_with:polban.ac.id',
+            'email' => 'required|email|unique:mahasiswa_aktif,email|ends_with:polban.ac.id|max:50',
             'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required'
         ]);
@@ -38,16 +42,18 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
 
         try {
-            $mahasiswa = MahasiswaAktif::create($data);
-            event(new Registered($mahasiswa));
+            DB::transaction(function () use ($data) {
+                $mahasiswa = MahasiswaAktif::create($data);
+                event(new Registered($mahasiswa));
+            });
 
-            return response()->json(['message' => 'Registrasi berhasil.']);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+            return response()->json(['message' => 'Registrasi berhasil.'], 201);
+        } catch (\Throwable $t) {
+            Log::error($t->getMessage());
 
             return response()->json([
                 'message' => 'Registrasi gagal.',
-                'error' => $e->getMessage()
+                'error' => $t->getMessage()
             ], 500);
         }
     }
@@ -76,7 +82,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Email belum terverifikasi.'], 401);
         }
 
-        $token = $mahasiswa->createToken('secret')->plainTextToken;
+        $token = $mahasiswa->createToken('secret' . $mahasiswa->nim)->plainTextToken;
 
         return response()->json([
             'message' => 'Berhasil login.',
@@ -91,25 +97,79 @@ class AuthController extends Controller
             $request->user()->currentAccessToken()->delete();
 
             return response()->json(['message' => 'Logout berhasil.']);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Throwable $t) {
+            Log::error($t->getMessage());
 
             return response()->json([
                 'message' => 'Logout gagal.',
-                'error' => $e->getMessage()
+                'error' => $t->getMessage()
             ], 500);
         }
     }
 
     public function forgotPassword(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error validasi.',
+                'errors' => $validator->errors()
+            ], 400);
+        }
 
-        return response()->json(['message' => __($status)]);
+        $mahasiswa = MahasiswaAktif::find($request->email);
+        if (!$mahasiswa) {
+            return response()->json(['message' => 'Akun tidak terdaftar.'], 404);
+        }
+
+        try {
+            $otp = rand(1000, 9999);
+            DB::transaction(function () use ($request, $otp) {
+                DB::table('password_resets')->insert([
+                    'email' => $request->email,
+                    'otp' => $otp,
+                    'created_at' => Carbon::now()
+                ]);
+                Mail::to($request->email)->send(new SendOTP($otp));
+            });
+
+            return response()->json(['message' => 'Kode OTP berhasil dikirim.']);
+        } catch (\Throwable $t) {
+            Log::error($t->getMessage());
+
+            return response()->json([
+                'message' => 'Kode OTP gagal dikirim.',
+                'error' => $t->getMessage()
+            ], 500);
+        }
+    }
+
+    public function verifyOTP(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|numeric|digits:4',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error validasi.',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        $result = DB::select("SELECT * FROM password_resets WHERE otp = ?", [$request->otp]);
+
+        if (!$result) {
+            return response()->json(['message' => 'Kode OTP tidak valid.'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Kode OTP valid.',
+            'email' => $result['email']
+        ]);
     }
 
     public function resetPassword(Request $request)
