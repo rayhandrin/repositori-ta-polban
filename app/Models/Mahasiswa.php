@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Admin extends Model
+class Mahasiswa extends Model
 {
     use HasFactory;
 
@@ -14,14 +14,14 @@ class Admin extends Model
      *
      * @var string
      */
-    protected $table = 'admin';
+    protected $table = 'mahasiswa';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'username';
+    protected $primaryKey = 'nim';
 
     /**
      * Indicates if the model's ID is auto-incrementing.
@@ -35,12 +35,12 @@ class Admin extends Model
      *
      * @var array
      */
-    protected $fillable = ['username', 'nama', 'password'];
+    protected $fillable = ['nim', 'nama', 'program_studi', 'email', 'password', 'status_aktif', 'tugas_akhir_id'];
 
     // * Relationship methods.
 
     public function tugasAkhir()
     {
-        return $this->hasMany(TugasAkhir::class);
+        return $this->belongsTo(TugasAkhir::class);
     }
 }

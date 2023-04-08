@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('kata_kunci', function (Blueprint $table) {
-            $table->id('id_kata_kunci');
-            $table->string('kata_kunci', 50);
+        Schema::create('admin', function (Blueprint $table) {
+            $table->string('username')->primary();
+            $table->string('nama');
+            $table->string('password');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kata_kunci');
+        Schema::dropIfExists('admin');
     }
 };
