@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SendOTP;
-use App\Models\MahasiswaAktif;
+use App\Models\Mahasiswa;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
@@ -23,9 +23,6 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'nim' => 'required|numeric|digits:9|unique:mahasiswa_aktif,nim',
             'nama' => 'required|regex:/^[a-zA-Z\s]*$/|max:50',
-            'jurusan' => 'required|string|max:50',
-            'program_studi' => 'required|string|max:70',
-            'angkatan' => 'required|numeric|digits:4',
             'email' => 'required|email|unique:mahasiswa_aktif,email|ends_with:polban.ac.id|max:50',
             'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required'
@@ -40,10 +37,12 @@ class AuthController extends Controller
 
         $data = $request->except('password_confirmation');
         $data['password'] = Hash::make($data['password']);
+        $data['status_aktif'] = true;
+        $data['program_studi_nomor'] = substr($data['nim'], 2, 4);
 
         try {
             DB::transaction(function () use ($data) {
-                $mahasiswa = MahasiswaAktif::create($data);
+                $mahasiswa = Mahasiswa::create($data);
                 event(new Registered($mahasiswa));
             });
 
@@ -72,7 +71,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $mahasiswa = MahasiswaAktif::find($request->nim);
+        $mahasiswa = Mahasiswa::find($request->nim);
 
         if (!$mahasiswa || !Hash::check($request->password, $mahasiswa->password)) {
             return response()->json(['message' => 'NIM / kata sandi salah.'], 401);
@@ -120,7 +119,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $mahasiswa = MahasiswaAktif::find($request->email);
+        $mahasiswa = Mahasiswa::find($request->email);
         if (!$mahasiswa) {
             return response()->json(['message' => 'Akun tidak terdaftar.'], 404);
         }

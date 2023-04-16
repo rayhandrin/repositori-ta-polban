@@ -44,22 +44,24 @@ class TugasAkhirController extends Controller
     public function store(Request $request)
     {
         $data_tugas_akhir = $request->only(['judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3']);
+        $id = date('YmdHis');
+        $data_tugas_akhir['id'] = $id;
         $data_tugas_akhir['admin_username'] = 'admin1'; // logged in admin
         $data_mahasiswa = $request->only(['mahasiswa1', 'mahasiswa2', 'mahasiswa3']);
         $data_dokumen = $request->only(['dokumen_1', 'dokumen_2', 'dokumen_3', 'dokumen_4', 'dokumen_opsional_1', 'dokumen_opsional_2']);
 
-        DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $data_dokumen) {
-            $tugas_akhir = TugasAkhir::create($data_tugas_akhir);
+        DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $data_dokumen, $id) {
+            TugasAkhir::create($data_tugas_akhir);
 
-            Mahasiswa::whereIn('nim', $data_mahasiswa)->update(['tugas_akhir_id' => $tugas_akhir->id]);
+            Mahasiswa::whereIn('nim', $data_mahasiswa)->update(['tugas_akhir_id' => $id]);
 
             $data_path = [];
             foreach ($data_dokumen as $key => $dokumen) {
                 $filename = $dokumen->getClientOriginalName();
-                $path = Storage::putFileAs('tugas-akhir/' . $tugas_akhir->id, $dokumen, $filename);
+                $path = Storage::putFileAs('tugas-akhir/' . $id, $dokumen, $filename);
                 $data_path[$key] = $path;
             }
-            $data_path['tugas_akhir_id'] = $tugas_akhir->id;
+            $data_path['tugas_akhir_id'] = $id;
 
             Dokumen::create($data_path);
         });

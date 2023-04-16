@@ -20,10 +20,6 @@
                         <input type="text" class="form-control" id="nama" name="nama" required>
                     </div>
                     <div class="mb-3">
-                        <label for="program_studi" class="form-label">Program Studi</label>
-                        <input type="text" class="form-control" id="program_studi" name="program_studi" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>

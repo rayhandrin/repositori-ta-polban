@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class MahasiswaController extends Controller
 {
@@ -37,9 +41,26 @@ class MahasiswaController extends Controller
      */
     public function store(Request $request)
     {
-        Mahasiswa::create($request->except('_token'));
+        $data = $request->except('_token');
+        $data['program_studi_nomor'] = substr($data['nim'], 2, 4);
+        $data['password'] = Hash::make($data['password']);
 
-        return redirect()->route('admin.mahasiswa.index')->with('message', 'Data mahasiswa berhasil ditambah!');
+        try {
+            if (array_key_exists('status_aktif', $data)) {
+                DB::transaction(function () use ($data) {
+                    $mahasiswa = Mahasiswa::create($data);
+                    event(new Registered($mahasiswa));
+                });
+            } else {
+                Mahasiswa::create($data);
+            }
+
+            return redirect()->route('admin.mahasiswa.index')->with('message', 'Data mahasiswa berhasil ditambah!');
+        } catch (\Throwable $t) {
+            Log::error($t->getMessage());
+
+            return redirect()->route('admin.mahasiswa.index')->with('message', 'Data mahasiswa gagal ditambah!');
+        }
     }
 
     /**

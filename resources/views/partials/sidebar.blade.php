@@ -18,6 +18,14 @@
         <li class="nav-title">Master</li>
         <li class="nav-item">
             <a class="nav-link {{ Route::is('admin.mahasiswa.*') ? 'active' : '' }}"
+                href="{{ route('admin.program-studi.index') }}">
+                <svg class="nav-icon">
+                    <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-book') }}"></use>
+                </svg> Program Studi
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Route::is('admin.mahasiswa.*') ? 'active' : '' }}"
                 href="{{ route('admin.mahasiswa.index') }}">
                 <svg class="nav-icon">
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-people') }}"></use>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\MahasiswaAktif;
+use App\Models\Mahasiswa;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -13,7 +13,7 @@ class EmailVerificationController extends Controller
     public function verify(Request $request)
     {
         try {
-            $mahasiswa = MahasiswaAktif::find($request->route('id'));
+            $mahasiswa = Mahasiswa::find($request->route('id'));
 
             if ($mahasiswa->hasVerifiedEmail()) {
                 throw new \Exception('Email sudah terverifikasi.');

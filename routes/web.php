@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\EmailVerificationController;
 use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\ProgramStudiController;
 use App\Http\Controllers\TugasAkhirController;
 use App\Models\TugasAkhir;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/admin/mahasiswa');
 
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('program-studi', ProgramStudiController::class);
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::resource('tugas-akhir', TugasAkhirController::class);
     Route::get('storage/{filename}', [TugasAkhirController::class, 'accessFile'])->name('tugas-akhir.access');

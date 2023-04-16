@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Mahasiswa extends Model
+class Mahasiswa extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The table associated with the model.
@@ -35,7 +38,7 @@ class Mahasiswa extends Model
      *
      * @var array
      */
-    protected $fillable = ['nim', 'nama', 'program_studi', 'email', 'password', 'status_aktif', 'tugas_akhir_id'];
+    protected $fillable = ['nim', 'nama', 'email', 'password', 'status_aktif', 'tugas_akhir_id', 'program_studi_nomor'];
 
     /**
      * The attributes that should be cast.
@@ -43,7 +46,8 @@ class Mahasiswa extends Model
      * @var array
      */
     protected $casts = [
-        'status_aktif' => 'boolean'
+        'status_aktif' => 'boolean',
+        'email_verified_at' => 'datetime'
     ];
 
     /**
@@ -63,5 +67,10 @@ class Mahasiswa extends Model
     public function programStudi()
     {
         return $this->belongsTo(ProgramStudi::class);
+    }
+
+    public function getJurusan()
+    {
+        return $this->programStudi()->select('jurusan');
     }
 }

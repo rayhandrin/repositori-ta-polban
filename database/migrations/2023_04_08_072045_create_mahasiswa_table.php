@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('nim', 9)->primary();
             $table->string('nama');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->boolean('status_aktif');
+            $table->boolean('status_aktif')->default(false);
             $table->timestamps();
             $table->string('tugas_akhir_id', 14)->nullable();
             $table->string('program_studi_nomor', 4)->nullable();
