@@ -59,4 +59,9 @@ class Mahasiswa extends Model
     {
         return $this->belongsTo(TugasAkhir::class);
     }
+
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class);
+    }
 }

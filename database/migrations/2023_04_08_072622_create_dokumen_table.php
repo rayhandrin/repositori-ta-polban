@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('dokumen_4');
             $table->string('dokumen_opsional_1')->nullable();
             $table->string('dokumen_opsional_2')->nullable();
-            $table->unsignedBigInteger('tugas_akhir_id');
+            $table->string('tugas_akhir_id', 14);
 
             $table->foreign('tugas_akhir_id')->references('id')->on('tugas_akhir')->onDelete('CASCADE')->onUpdate('CASCADE');
         });
