@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TugasAkhir extends Model
+class HakAkses extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class TugasAkhir extends Model
      *
      * @var string
      */
-    protected $table = 'tugas_akhir';
+    protected $table = 'hak_akses';
 
     /**
      * The primary key associated with the table.
@@ -35,7 +35,18 @@ class TugasAkhir extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3', 'filepath', 'admin_username'];
+    protected $fillable = ['id', 'diminta_pada', 'status_disetujui', 'akhir_peminjaman', 'hak_aksescol', 'mahasiswa_nim', 'tugas_akhir_id', 'admin_username'];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'diminta_pada' => 'datetime',
+        'status_disetujui' => 'boolean',
+        'akhir_peminjaman' => 'datetime',
+    ];
 
     // * Relationship methods.
 
@@ -44,13 +55,13 @@ class TugasAkhir extends Model
         return $this->belongsTo(Admin::class);
     }
 
-    public function mahasiswa()
+    public function tugasAkhir()
     {
-        return $this->hasMany(Mahasiswa::class);
+        return $this->belongsTo(TugasAkhir::class);
     }
 
-    public function hakAkses()
+    public function mahasiswa()
     {
-        return $this->hasMany(HakAkses::class);
+        return $this->belongsTo(Mahasiswa::class);
     }
 }

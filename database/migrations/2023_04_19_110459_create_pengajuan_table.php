@@ -13,18 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tugas_akhir', function (Blueprint $table) {
-            $table->string('id', 14)->primary();
-            $table->string('judul');
-            $table->year('tahun')->nullable();
-            $table->string('kata_kunci', 100)->nullable();
-            $table->string('kontributor_1')->nullable();
-            $table->string('kontributor_2')->nullable();
-            $table->string('kontributor_3')->nullable();
-            $table->json('filepath')->nullable();
+        Schema::create('pengajuan', function (Blueprint $table) {
+            $table->string('nomor')->primary();
+            $table->boolean('status')->nullable();
+            $table->timestamp('direspon_pada')->nullable();
+            $table->string('alasan_penolakan')->nullable();
             $table->timestamps();
+            $table->string('mahasiswa_nim', 9);
             $table->string('admin_username')->nullable();
 
+            $table->foreign('mahasiswa_nim')->references('nim')->on('mahasiswa')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('admin_username')->references('username')->on('admin')->onDelete('SET NULL')->onUpdate('CASCADE');
         });
     }
@@ -36,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tugas_akhir');
+        Schema::dropIfExists('pengajuan');
     }
 };

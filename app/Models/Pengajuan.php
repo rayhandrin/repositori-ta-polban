@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Dokumen extends Model
+class Pengajuan extends Model
 {
     use HasFactory;
 
@@ -14,14 +14,14 @@ class Dokumen extends Model
      *
      * @var string
      */
-    protected $table = 'dokumen';
+    protected $table = 'pengajuan';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = null;
+    protected $primaryKey = 'nomor';
 
     /**
      * Indicates if the model's ID is auto-incrementing.
@@ -35,19 +35,27 @@ class Dokumen extends Model
      *
      * @var array
      */
-    protected $fillable = ['dokumen_1', 'dokumen_2', 'dokumen_3', 'dokumen_4', 'dokumen_opsional_1', 'dokumen_opsional_2', 'tugas_akhir_id'];
+    protected $fillable = ['nomor', 'status', 'direspon_pada', 'alasan_penolakan', 'mahasiswa_nim', 'admin_username'];
 
     /**
-     * Indicates if the model should be timestamped.
+     * The attributes that should be cast.
      *
-     * @var bool
+     * @var array
      */
-    public $timestamps = false;
+    protected $casts = [
+        'status' => 'boolean',
+        'direspon_pada' => 'datetime'
+    ];
 
     // * Relationship methods.
 
-    public function tugasAkhir()
+    public function admin()
     {
-        return $this->belongsTo(TugasAkhir::class);
+        return $this->belongsTo(Admin::class);
+    }
+
+    public function mahasiswa()
+    {
+        return $this->belongsTo(Mahasiswa::class);
     }
 }

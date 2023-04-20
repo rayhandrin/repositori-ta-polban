@@ -38,7 +38,7 @@ class Mahasiswa extends Authenticatable implements MustVerifyEmail
      *
      * @var array
      */
-    protected $fillable = ['nim', 'nama', 'email', 'password', 'status_aktif', 'tugas_akhir_id', 'program_studi_nomor'];
+    protected $fillable = ['nim', 'nama', 'email', 'email_verified_at', 'password', 'status_aktif', 'tugas_akhir_id', 'program_studi_nomor'];
 
     /**
      * The attributes that should be cast.
@@ -57,6 +57,15 @@ class Mahasiswa extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = ['password'];
 
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'status_aktif' => false,
+    ];
+
     // * Relationship methods.
 
     public function tugasAkhir()
@@ -69,8 +78,13 @@ class Mahasiswa extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(ProgramStudi::class);
     }
 
-    public function getJurusan()
+    public function hakAkses()
     {
-        return $this->programStudi()->select('jurusan');
+        return $this->hasMany(HakAkses::class);
+    }
+
+    public function pengajuan()
+    {
+        return $this->hasMany(Pengajuan::class);
     }
 }

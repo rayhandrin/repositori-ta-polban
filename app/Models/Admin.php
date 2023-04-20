@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
     use HasFactory;
 
@@ -37,10 +37,27 @@ class Admin extends Model
      */
     protected $fillable = ['username', 'nama', 'password'];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['password'];
+
     // * Relationship methods.
 
     public function tugasAkhir()
     {
         return $this->hasMany(TugasAkhir::class);
+    }
+
+    public function pengajuan()
+    {
+        return $this->hasMany(Pengajuan::class);
+    }
+
+    public function hakAkses()
+    {
+        return $this->hasMany(HakAkses::class);
     }
 }

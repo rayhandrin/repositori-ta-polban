@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->string('nim', 9)->primary();
             $table->string('nama');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->boolean('status_aktif')->default(false);
+            $table->boolean('status_aktif');
             $table->timestamps();
             $table->string('tugas_akhir_id', 14)->nullable();
             $table->string('program_studi_nomor', 4)->nullable();
