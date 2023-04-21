@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'api',
-        'passwords' => 'mahasiswa_aktif',
+        'guard' => 'admin',
+        'passwords' => 'mahasiswa',
     ],
 
     /*
@@ -36,13 +36,13 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'admin' => [
             'driver' => 'session',
-            'provider' => 'mahasiswa_aktif',
+            'provider' => 'admin',
         ],
-        'api' => [
+        'mahasiswa_api' => [
             'driver' => 'token',
-            'provider' => 'mahasiswa_aktif',
+            'provider' => 'mahasiswa',
             'hash' => false
         ],
     ],
@@ -69,15 +69,18 @@ return [
         //     'driver' => 'eloquent',
         //     'model' => App\Models\User::class,
         // ],
-        'mahasiswa_aktif' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\MahasiswaAktif::class,
-        ],
-
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'mahasiswa' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Mahasiswa::class,
+        ],
     ],
 
     /*
@@ -102,8 +105,8 @@ return [
         //     'expire' => 60,
         //     'throttle' => 60,
         // ],
-        'mahasiswa_aktif' => [
-            'provider' => 'mahasiswa_aktif',
+        'mahasiswa' => [
+            'provider' => 'mahasiswa',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

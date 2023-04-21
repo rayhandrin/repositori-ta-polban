@@ -35,14 +35,9 @@ class TugasAkhir extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3', 'filepath', 'admin_username'];
+    protected $fillable = ['id', 'judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3', 'filepath', 'staf_perpus_pengunggah'];
 
     // * Relationship methods.
-
-    public function admin()
-    {
-        return $this->belongsTo(Admin::class);
-    }
 
     public function mahasiswa()
     {
@@ -52,5 +47,10 @@ class TugasAkhir extends Model
     public function hakAkses()
     {
         return $this->hasMany(HakAkses::class);
+    }
+
+    public function pengajuan()
+    {
+        return $this->hasOne(Pengajuan::class);
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Dokumen;
 use App\Models\Mahasiswa;
 use App\Models\TugasAkhir;
@@ -62,8 +63,6 @@ class TugasAkhirController extends Controller
                 $data_path[$key] = $path;
             }
             $data_path['tugas_akhir_id'] = $id;
-
-            Dokumen::create($data_path);
         });
 
         return redirect()->route('admin.tugas-akhir.index')->with('message', 'Data tugas akhir berhasil ditambah!');

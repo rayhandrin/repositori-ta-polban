@@ -22,10 +22,8 @@ return new class extends Migration
             $table->string('kontributor_2')->nullable();
             $table->string('kontributor_3')->nullable();
             $table->json('filepath')->nullable();
+            $table->string('staf_perpus_pengunggah')->nullable();
             $table->timestamps();
-            $table->string('admin_username')->nullable();
-
-            $table->foreign('admin_username')->references('username')->on('admin')->onDelete('SET NULL')->onUpdate('CASCADE');
         });
     }
 

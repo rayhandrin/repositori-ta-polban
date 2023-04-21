@@ -59,13 +59,19 @@
 </head>
 
 <body>
-    @include('partials.sidebar')
+    @auth
+        @include('partials.sidebar')
+    @endauth
     <div class="wrapper d-flex flex-column min-vh-100 bg-light">
-        @include('partials.header')
+        @auth
+            @include('partials.header')
+        @endauth
         <div class="body flex-grow-1 px-3">
             @yield('content')
         </div>
-        @include('partials.footer')
+        @auth
+            @include('partials.footer')
+        @endauth
     </div>
 
     <!-- CoreUI and necessary plugins-->

@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\API\EmailVerificationController;
-use App\Http\Controllers\MahasiswaController;
-use App\Http\Controllers\ProgramStudiController;
-use App\Http\Controllers\TugasAkhirController;
-use App\Models\TugasAkhir;
+use App\Http\Controllers\Admin\MahasiswaController;
+use App\Http\Controllers\Admin\ProgramStudiController;
+use App\Http\Controllers\Admin\TugasAkhirController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,13 +19,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::redirect('/', '/admin/mahasiswa');
+Route::redirect('/', '/admin');
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::get('/admin', [LoginController::class, 'index'])->middleware('guest')->name('login');
+Route::post('/admin', [LoginController::class, 'authenticate'])->middleware('guest');
+
+Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('program-studi', ProgramStudiController::class);
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::resource('tugas-akhir', TugasAkhirController::class);
     Route::get('storage/{filename}', [TugasAkhirController::class, 'accessFile'])->name('tugas-akhir.access');
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });
 
 // Email verification

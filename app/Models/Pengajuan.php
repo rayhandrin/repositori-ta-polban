@@ -35,7 +35,7 @@ class Pengajuan extends Model
      *
      * @var array
      */
-    protected $fillable = ['nomor', 'status', 'direspon_pada', 'alasan_penolakan', 'mahasiswa_nim', 'admin_username'];
+    protected $fillable = ['nomor', 'status', 'direspon_pada', 'alasan_penolakan', 'admin_username', 'mahasiswa_nim', 'tugas_akhir_id'];
 
     /**
      * The attributes that should be cast.
@@ -57,5 +57,10 @@ class Pengajuan extends Model
     public function mahasiswa()
     {
         return $this->belongsTo(Mahasiswa::class);
+    }
+
+    public function tugasAkhir()
+    {
+        return $this->belongsTo(TugasAkhir::class);
     }
 }

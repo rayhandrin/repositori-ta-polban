@@ -46,11 +46,6 @@ class Admin extends Authenticatable
 
     // * Relationship methods.
 
-    public function tugasAkhir()
-    {
-        return $this->hasMany(TugasAkhir::class);
-    }
-
     public function pengajuan()
     {
         return $this->hasMany(Pengajuan::class);
