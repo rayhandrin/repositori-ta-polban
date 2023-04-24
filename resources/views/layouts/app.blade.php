@@ -41,6 +41,7 @@
     <!-- Main styles for this application-->
     <link href="{{ asset('css/style.min.css') }}" rel="stylesheet">
     <!-- Custom CSS for specific pages-->
+    <link href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css" rel="stylesheet" />
     @stack('styles')
     <!-- Global site tag (gtag.js) - Google Analytics-->
     <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-118965717-3"></script>
@@ -81,6 +82,7 @@
     <script src="{{ asset('vendors/@coreui/coreui/js/coreui.bundle.min.js') }}"></script>
     <script src="{{ asset('vendors/simplebar/js/simplebar.min.js') }}"></script>
     <!-- Custom Javascript for specific pages-->
+    <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.js"></script>
     @stack('scripts')
 
 </body>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-lg">
+    <div class="container-lg mb-5">
         <div class="row">
             <div class="col">
                 <h3>Data Program Studi</h3>
@@ -22,45 +22,11 @@
         </div>
         <div class="row mt-4">
             <div class="col">
-                @if (count($program_studi) == 0)
-                    <div class="alert alert-dark">
-                        Tidak ada data.
+                <div class="card">
+                    <div class="card-body">
+                        {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover table-responsive']) }}
                     </div>
-                @else
-                    <table class="table table-striped table-hover table-responsive table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Nomor</th>
-                                <th>Nama</th>
-                                <th>Kode</th>
-                                <th>Jurusan</th>
-                                <th>Diploma</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($program_studi as $pd)
-                                <tr>
-                                    <td>{{ $pd->nomor }}</td>
-                                    <td>{{ $pd->nama }}</td>
-                                    <td>{{ $pd->kode }}</td>
-                                    <td>{{ $pd->jurusan }}</td>
-                                    <td>{{ $pd->diploma }}</td>
-                                    <td class="text-center">
-                                        <a href="{{ route('admin.program-studi.edit', $pd->nomor) }}"
-                                            class="btn btn-warning">Ubah</a>
-                                        <form action="{{ route('admin.program-studi.destroy', $pd->nomor) }}" method="post"
-                                            class="d-inline">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="btn btn-danger delete">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                </div>
             </div>
         </div>
     </div>
@@ -69,7 +35,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('.delete').click(function(e) {
+            $(document).on('click', '.delete', function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Anda yakin menghapus?',
@@ -87,4 +53,5 @@
             });
         });
     </script>
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 @endpush

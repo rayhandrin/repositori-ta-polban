@@ -23,8 +23,18 @@ class ProgramStudiDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'programstudi.action')
-            ->setRowId('id');
+            ->setRowId('nomor')
+            ->addColumn('aksi', function ($row) {
+                $btn = '<a href="' . route('admin.program-studi.edit', $row->nomor) . '" class="btn btn-warning">Ubah</a>';
+                $btn .= '<form action="' . route('admin.program-studi.destroy', $row->nomor) . '" method="post" class="d-inline">
+                            ' . csrf_field() . '
+                            <input type="hidden" name="_method" value="delete">
+                            <button type="submit" class="btn btn-danger delete">Hapus</button>
+                        </form>';
+
+                return $btn;
+            })
+            ->rawColumns(['aksi']);
     }
 
     /**
@@ -46,20 +56,21 @@ class ProgramStudiDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('programstudi-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('programstudi-table')
+            ->setTableAttribute('style', 'width:100%')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            //->dom('Bfrtip')
+            ->orderBy(0, 'asc')
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make('excel'),
+                Button::make('csv'),
+                Button::make('pdf'),
+                Button::make('print'),
+                Button::make('reset'),
+                Button::make('reload')
+            ]);
     }
 
     /**
@@ -70,15 +81,12 @@ class ProgramStudiDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
-            Column::make('id'),
-            Column::make('add your columns'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+            Column::make('nomor')->width('8%'),
+            Column::make('nama')->width('27%'),
+            Column::make('kode')->width('12%'),
+            Column::make('jurusan')->width('25%'),
+            Column::make('diploma')->width('8%'),
+            Column::computed('aksi')->addClass('text-center')->width('20%')
         ];
     }
 

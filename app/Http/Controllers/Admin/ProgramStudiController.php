@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\ProgramStudiDataTable;
 use App\Http\Controllers\Controller;
 use App\Imports\ProgramStudiImport;
 use App\Models\ProgramStudi;
@@ -17,11 +18,9 @@ class ProgramStudiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ProgramStudiDataTable $dataTable)
     {
-        return view('admin.program-studi.index', [
-            'program_studi' => ProgramStudi::all()
-        ]);
+        return $dataTable->render('admin.program-studi.index');
     }
 
     /**
