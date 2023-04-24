@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\MahasiswaDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Mahasiswa;
+use App\Models\ProgramStudi;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class MahasiswaController extends Controller
 {
@@ -17,11 +20,9 @@ class MahasiswaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(MahasiswaDataTable $dataTable)
     {
-        return view('admin.mahasiswa.index', [
-            'mahasiswa' => Mahasiswa::paginate(10)
-        ]);
+        return $dataTable->render('admin.mahasiswa.index');
     }
 
     /**
@@ -42,18 +43,33 @@ class MahasiswaController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->except('_token');
-        $data['program_studi_nomor'] = substr($data['nim'], 2, 4);
-        $data['password'] = Hash::make($data['password']);
+        $validated = $request->validate([
+            'nim' => 'required|integer|digits:9|unique:mahasiswa,nim',
+            'nama' => 'required|regex:/^[a-zA-Z\s\.]*$/',
+            'email' => 'nullable|email|unique:mahasiswa,email|ends_with:polban.ac.id|required_with:status_aktif',
+            'password' => 'nullable|min:6|required_with:email',
+            'status_aktif' => 'nullable|required_with:email'
+        ]);
+
+        $nomor_prodi = substr($validated['nim'], 2, 4);
+        $program_studi = ProgramStudi::find($nomor_prodi);
+        if (!$program_studi) {
+            return back()->withErrors([
+                'nim' => 'Nomor program studi tidak terdaftar untuk NIM tersebut.'
+            ])->withInput();
+        }
+
+        $validated['program_studi_nomor'] = $nomor_prodi;
+        $validated['password'] = (isset($validated['password'])) ? Hash::make($validated['password']) : null;
 
         try {
-            if (array_key_exists('status_aktif', $data)) {
-                DB::transaction(function () use ($data) {
-                    $mahasiswa = Mahasiswa::create($data);
+            if (array_key_exists('status_aktif', $validated)) {
+                DB::transaction(function () use ($validated) {
+                    $mahasiswa = Mahasiswa::create($validated);
                     event(new Registered($mahasiswa));
                 });
             } else {
-                Mahasiswa::create($data);
+                Mahasiswa::create($validated);
             }
 
             return redirect()->route('admin.mahasiswa.index')->with('message', 'Data mahasiswa berhasil ditambah!');
@@ -72,8 +88,9 @@ class MahasiswaController extends Controller
      */
     public function show($id)
     {
+        $mahasiswa = Mahasiswa::with('programStudi:nomor,nama')->findOrFail($id);
         return view('admin.mahasiswa.show', [
-            'mahasiswa' => Mahasiswa::findOrFail($id)
+            'mahasiswa' => $mahasiswa
         ]);
     }
 
@@ -85,7 +102,10 @@ class MahasiswaController extends Controller
      */
     public function edit($id)
     {
-        //
+        $mahasiswa = Mahasiswa::findOrFail($id);
+        return view('admin.mahasiswa.edit', [
+            'mahasiswa' => $mahasiswa
+        ]);
     }
 
     /**
@@ -97,7 +117,19 @@ class MahasiswaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'nim' => [
+                'required', 'integer', 'digits:9',
+                Rule::unique('mahasiswa', 'nim')->ignore($id, 'nim')
+            ],
+            'nama' => 'required|regex:/^[a-zA-Z\s\.]*$/',
+            'email' => [
+                'nullable', 'email', 'ends_with:polban.ac.id', 'required_with:status_aktif',
+                Rule::unique('mahasiswa', 'email')->ignore($id, 'nim')
+            ],
+            'password' => 'nullable|min:6',
+            'status_aktif' => 'nullable|required_with:email'
+        ]);
     }
 
     /**

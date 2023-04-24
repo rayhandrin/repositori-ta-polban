@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-lg">
+    <div class="container-lg mb-5">
         <div class="row">
             <div class="col">
                 <h3>Data Mahasiswa</h3>
@@ -20,52 +20,17 @@
         </div>
         <div class="row mt-4">
             <div class="col">
-                @if (count($mahasiswa) == 0)
-                    <div class="alert alert-dark">
-                        Tidak ada data.
+                <div class="card">
+                    <div class="card-body">
+                        {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover table-responsive']) }}
                     </div>
-                @else
-                    <table class="table table-striped table-hover table-responsive table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NIM</th>
-                                <th>Nama</th>
-                                <th>Program Studi</th>
-                                <th>Status Aktif</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($mahasiswa as $mhs)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $mhs->nim }}</td>
-                                    <td>{{ $mhs->nama }}</td>
-                                    <td>{{ $mhs->program_studi }}</td>
-                                    <td>
-                                        <span
-                                            class="badge rounded-pill {{ $mhs->status_aktif ? 'text-bg-success' : 'text-bg-warning' }}">
-                                            {{ $mhs->status_aktif ? 'Aktif' : 'Tidak Aktif' }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ route('admin.mahasiswa.show', $mhs->nim) }}"
-                                            class="btn btn-info">Detail</a>
-                                        <form action="{{ route('admin.mahasiswa.destroy', $mhs->nim) }}" method="post"
-                                            class="d-inline">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="btn btn-danger"
-                                                onclick="return confirm('Yakin hapus?')">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/scripts.js') }}"></script>
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+@endpush

@@ -19,11 +19,17 @@
                 </div>
                 <div class="mb-3">
                     <label for="program_studi" class="form-label">Program Studi</label>
-                    <input type="text" class="form-control" id="program_studi" value="{{ $mahasiswa->program_studi }}">
+                    <input type="text" class="form-control" id="program_studi"
+                        value="{{ $mahasiswa->programStudi->nama }}">
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" value="{{ $mahasiswa->email }}">
+                </div>
+                <div class="mb-3">
+                    <label for="email_verified_at" class="form-label">Verifikasi Email</label>
+                    <input type="email_verified_at" class="form-control" id="email_verified_at"
+                        value="{{ $mahasiswa->email_verified_at->format('d F Y - H:i:s') }}">
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="status_aktif">Status Aktif</label>
