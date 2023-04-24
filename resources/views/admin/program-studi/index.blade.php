@@ -10,6 +10,8 @@
         <div class="row mt-3">
             <div class="col">
                 <a href="{{ route('admin.program-studi.create') }}" class="btn btn-primary">Tambah Data Program Studi</a>
+                <a href="{{ route('admin.program-studi.import') }}" class="btn btn-success">Import Data Program Studi
+                    (Excel)</a>
                 @if (session()->get('message'))
                     <div class="alert alert-success mt-4 mb-0 alert-dismissible fade show" role="alert">
                         {{ session()->get('message') }}
@@ -45,12 +47,13 @@
                                     <td>{{ $pd->jurusan }}</td>
                                     <td>{{ $pd->diploma }}</td>
                                     <td class="text-center">
+                                        <a href="{{ route('admin.program-studi.edit', $pd->nomor) }}"
+                                            class="btn btn-warning">Ubah</a>
                                         <form action="{{ route('admin.program-studi.destroy', $pd->nomor) }}" method="post"
                                             class="d-inline">
                                             @csrf
                                             @method('delete')
-                                            <button type="submit" class="btn btn-danger"
-                                                onclick="return confirm('Yakin hapus?')">Hapus</button>
+                                            <button type="submit" class="btn btn-danger delete">Hapus</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -62,3 +65,26 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('.delete').click(function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Anda yakin menghapus?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(this).parent().submit();
+                    }
+                })
+            });
+        });
+    </script>
+@endpush

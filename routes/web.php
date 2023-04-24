@@ -26,10 +26,17 @@ Route::post('/admin', [LoginController::class, 'authenticate'])->middleware('gue
 
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('program-studi/import', [ProgramStudiController::class, 'importPage'])->name('program-studi.import');
+    Route::get('program-studi/import/template', [ProgramStudiController::class, 'downloadTemplate'])->name('program-studi.template');
+    Route::post('program-studi/import', [ProgramStudiController::class, 'import']);
     Route::resource('program-studi', ProgramStudiController::class);
+
     Route::resource('mahasiswa', MahasiswaController::class);
+
     Route::resource('tugas-akhir', TugasAkhirController::class);
     Route::get('storage/{filename}', [TugasAkhirController::class, 'accessFile'])->name('tugas-akhir.access');
+
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });
 
