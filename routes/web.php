@@ -35,7 +35,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::resource('mahasiswa', MahasiswaController::class);
 
     Route::resource('tugas-akhir', TugasAkhirController::class);
-    Route::get('storage/{filename}', [TugasAkhirController::class, 'accessFile'])->name('tugas-akhir.access');
+    Route::get('view/{path}', [TugasAkhirController::class, 'viewFile'])->name('tugas-akhir.access')->where('path', '([A-Za-z0-9\-\/\s\.]+)');;
 
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\TugasAkhirDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Dokumen;
 use App\Models\Mahasiswa;
 use App\Models\TugasAkhir;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
 class TugasAkhirController extends Controller
@@ -19,11 +19,9 @@ class TugasAkhirController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(TugasAkhirDataTable $dataTable)
     {
-        return view('admin.tugas-akhir.index', [
-            'tugas_akhir' => TugasAkhir::paginate(10)
-        ]);
+        return $dataTable->render('admin.tugas-akhir.index');
     }
 
     /**
@@ -44,25 +42,46 @@ class TugasAkhirController extends Controller
      */
     public function store(Request $request)
     {
-        $data_tugas_akhir = $request->only(['judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3']);
+        $validated = $request->validate([
+            'judul' => 'required|unique:tugas_akhir,judul',
+            'tahun' => 'nullable|integer|digits:4',
+            'kata_kunci' => 'nullable',
+            'kontributor_1' => 'nullable',
+            'kontributor_2' => 'nullable',
+            'kontributor_3' => 'nullable',
+            'mahasiswa_1' => 'required',
+            'mahasiswa_2' => 'nullable',
+            'mahasiswa_3' => 'nullable',
+            'cover' => 'required|file',
+            'bab_1' => 'required|file',
+            'bab_2' => 'required|file',
+            'bab_5' => 'required|file',
+            'kelengkapan' => 'required|file',
+            'bab_3' => 'nullable|file',
+            'bab_4' => 'nullable|file',
+            'opsional_1' => 'nullable|file',
+            'opsional_2' => 'nullable|file',
+        ]);
+
+        $data_tugas_akhir = Arr::only($validated, ['judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3']);
         $id = date('YmdHis');
         $data_tugas_akhir['id'] = $id;
-        $data_tugas_akhir['admin_username'] = 'admin1'; // logged in admin
-        $data_mahasiswa = $request->only(['mahasiswa1', 'mahasiswa2', 'mahasiswa3']);
-        $data_dokumen = $request->only(['dokumen_1', 'dokumen_2', 'dokumen_3', 'dokumen_4', 'dokumen_opsional_1', 'dokumen_opsional_2']);
+        $data_tugas_akhir['staf_perpus_pengunggah'] = Auth::user()->nama;
+        $data_mahasiswa = Arr::only($validated, ['mahasiswa_1', 'mahasiswa_2', 'mahasiswa_3']);
+        $data_dokumen = Arr::only($validated, ['cover', 'bab_1', 'bab_2', 'bab_5', 'kelengkapan', 'bab_3', 'bab_4', 'opsional_1', 'opsional_2']);
+
+        $filepath = [];
+        foreach ($data_dokumen as $key => $dokumen) {
+            $filename = $dokumen->getClientOriginalName();
+            $path = Storage::putFileAs('tugas-akhir/' . $id, $dokumen, $filename);
+            $filepath[$key] = $path;
+        }
+        $data_tugas_akhir['filepath'] = $filepath;
 
         DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $data_dokumen, $id) {
             TugasAkhir::create($data_tugas_akhir);
 
             Mahasiswa::whereIn('nim', $data_mahasiswa)->update(['tugas_akhir_id' => $id]);
-
-            $data_path = [];
-            foreach ($data_dokumen as $key => $dokumen) {
-                $filename = $dokumen->getClientOriginalName();
-                $path = Storage::putFileAs('tugas-akhir/' . $id, $dokumen, $filename);
-                $data_path[$key] = $path;
-            }
-            $data_path['tugas_akhir_id'] = $id;
         });
 
         return redirect()->route('admin.tugas-akhir.index')->with('message', 'Data tugas akhir berhasil ditambah!');
@@ -76,10 +95,10 @@ class TugasAkhirController extends Controller
      */
     public function show($id)
     {
-        // $data = TugasAkhir::with(['mahasiswa', 'dokumen'])->findOrFail($id);
+        // $data = TugasAkhir::findOrFail($id);
         // dd($data);
         return view('admin.tugas-akhir.show', [
-            'tugas_akhir' => TugasAkhir::with(['mahasiswa', 'dokumen'])->findOrFail($id)
+            'tugas_akhir' => TugasAkhir::findOrFail($id)
         ]);
     }
 
@@ -114,25 +133,24 @@ class TugasAkhirController extends Controller
      */
     public function destroy($id)
     {
-        TugasAkhir::destroy($id);
+        try {
+            Storage::disk('tugas-akhir')->deleteDirectory($id);
+            TugasAkhir::destroy($id);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
 
         return redirect()->route('admin.tugas-akhir.index')->with('message', 'Data tugas akhir berhasil dihapus!');
     }
 
-    public function accessFile($filename)
+    public function viewFile($path)
     {
-        $path = storage_path($filename);
+        abort_if(
+            !Storage::disk('tugas-akhir')->exists($path),
+            404,
+            "The file doesn't exist. Check the path."
+        );
 
-        if (!File::exists($path)) {
-            abort(404);
-        }
-
-        $file = File::get($path);
-        $type = File::mimeType($path);
-
-        $response = Response::make($file, 200);
-        $response->header("Content-Type", $type);
-
-        return $response;
+        return Storage::disk('tugas-akhir')->response($path);
     }
 }

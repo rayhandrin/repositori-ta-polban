@@ -12,7 +12,7 @@
                 <form action="{{ route('admin.mahasiswa.store') }}" method="post" autocomplete="on">
                     @csrf
                     <div class="mb-3">
-                        <label for="nim" class="form-label">NIM</label>
+                        <label for="nim" class="form-label">NIM<span class="text-danger ms-1">*</span></label>
                         <input type="number" class="form-control @error('nim') is-invalid @enderror" id="nim"
                             name="nim" value="{{ old('nim') }}" autofocus>
                         @error('nim')
@@ -20,7 +20,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="nama" class="form-label">Nama</label>
+                        <label for="nama" class="form-label">Nama<span class="text-danger ms-1">*</span></label>
                         <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama"
                             name="nama" value="{{ old('nama') }}">
                         @error('nama')

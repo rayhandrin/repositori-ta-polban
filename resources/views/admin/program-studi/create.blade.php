@@ -12,7 +12,7 @@
                 <form action="{{ route('admin.program-studi.store') }}" method="post" autocomplete="off">
                     @csrf
                     <div class="mb-3">
-                        <label for="nomor" class="form-label">Nomor</label>
+                        <label for="nomor" class="form-label">Nomor<span class="text-danger ms-1">*</span></label>
                         <input type="number" class="form-control @error('nomor') is-invalid @enderror" id="nomor"
                             name="nomor" value="{{ old('nomor') }}" autofocus>
                         @error('nomor')
@@ -20,7 +20,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="nama" class="form-label">Nama</label>
+                        <label for="nama" class="form-label">Nama<span class="text-danger ms-1">*</span></label>
                         <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama"
                             name="nama" value="{{ old('nama') }}">
                         @error('nama')
@@ -28,7 +28,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="kode" class="form-label">Kode</label>
+                        <label for="kode" class="form-label">Kode<span class="text-danger ms-1">*</span></label>
                         <input type="text" class="form-control @error('kode') is-invalid @enderror" id="kode"
                             name="kode" value="{{ old('kode') }}">
                         @error('kode')
@@ -36,7 +36,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="jurusan" class="form-label">Jurusan</label>
+                        <label for="jurusan" class="form-label">Jurusan<span class="text-danger ms-1">*</span></label>
                         <input type="text" class="form-control @error('jurusan') is-invalid @enderror" id="jurusan"
                             name="jurusan" value="{{ old('jurusan') }}">
                         @error('jurusan')
@@ -44,7 +44,7 @@
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="diploma" class="form-label">Diploma</label>
+                        <label for="diploma" class="form-label">Diploma<span class="text-danger ms-1">*</span></label>
                         <input type="text" class="form-control @error('diploma') is-invalid @enderror" id="diploma"
                             name="diploma" value="{{ old('diploma') }}">
                         @error('diploma')

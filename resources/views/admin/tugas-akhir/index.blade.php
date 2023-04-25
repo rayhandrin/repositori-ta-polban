@@ -20,45 +20,17 @@
         </div>
         <div class="row mt-4">
             <div class="col">
-                @if (count($tugas_akhir) == 0)
-                    <div class="alert alert-dark">
-                        Tidak ada data.
+                <div class="card">
+                    <div class="card-body">
+                        {{ $dataTable->table(['class' => 'table table-bordered table-striped table-hover table-responsive']) }}
                     </div>
-                @else
-                    <table class="table table-striped table-hover table-responsive table-bordered">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Judul</th>
-                                <th>Tahun</th>
-                                <th>Kata Kunci</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($tugas_akhir as $tugas)
-                                <tr>
-                                    <td>{{ $tugas->id }}</td>
-                                    <td>{{ $tugas->judul }}</td>
-                                    <td>{{ $tugas->tahun }}</td>
-                                    <td>{{ $tugas->kata_kunci }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.tugas-akhir.show', $tugas->id) }}"
-                                            class="btn btn-info">Detail</a>
-                                        <form action="{{ route('admin.tugas-akhir.destroy', $tugas->id) }}" method="post"
-                                            class="d-inline">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="btn btn-danger"
-                                                onclick="return confirm('Yakin hapus?')">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/scripts.js') }}"></script>
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+@endpush

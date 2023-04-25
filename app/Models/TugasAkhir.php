@@ -37,6 +37,15 @@ class TugasAkhir extends Model
      */
     protected $fillable = ['id', 'judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3', 'filepath', 'staf_perpus_pengunggah'];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'filepath' => 'array',
+    ];
+
     // * Relationship methods.
 
     public function mahasiswa()

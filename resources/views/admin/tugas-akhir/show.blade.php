@@ -65,24 +65,9 @@
                         </ul>
                     </div>
                     <div class="col-4">
-                        <label for="dokumen" class="form-label">Dokumen</label>
-                        <ul class="list-group">
-                            <li class="list-group-item"><a
-                                    href="{{ route('admin.tugas-akhir.access', $tugas_akhir->dokumen->dokumen_2) }}">Dokumen
-                                    1</a></li>
-                            <li class="list-group-item"><a
-                                    href="{{ asset('storage/' . $tugas_akhir->dokumen->dokumen_2) }}">Dokumen 2</a></li>
-                            <li class="list-group-item"><a
-                                    href="{{ asset('storage/' . $tugas_akhir->dokumen->dokumen_3) }}">Dokumen 3</a></li>
-                            <li class="list-group-item"><a
-                                    href="{{ asset('storage/' . $tugas_akhir->dokumen->dokumen_4) }}">Dokumen 4</a></li>
-                            @if ($tugas_akhir->dokumen->dokumen_opsional_1 != null)
-                                <li class="list-group-item">{{ $tugas_akhir->dokumen->dokumen_opsional_1 }}</li>
-                            @endif
-                            @if ($tugas_akhir->dokumen->dokumen_opsional_2 != null)
-                                <li class="list-group-item">{{ $tugas_akhir->dokumen->dokumen_opsional_2 }}</li>
-                            @endif
-                        </ul>
+                        @foreach ($tugas_akhir->filepath as $key => $path)
+                            <a href="{{ route('admin.tugas-akhir.access', $path) }}">{{ $key }}</a>
+                        @endforeach
                     </div>
                 </div>
                 <div>
