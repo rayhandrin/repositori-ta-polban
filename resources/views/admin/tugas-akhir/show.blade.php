@@ -65,8 +65,11 @@
                         </ul>
                     </div>
                     <div class="col-4">
+                        <label class="form-label">Dokumen</label>
                         @foreach ($tugas_akhir->filepath as $key => $path)
-                            <a href="{{ route('admin.tugas-akhir.access', $path) }}">{{ $key }}</a>
+                            <a href="{{ route('admin.tugas-akhir.access', $path) }}"
+                                class="btn btn-outline-primary d-block mb-2 w-50"
+                                target="_blank">{{ \Illuminate\Support\Str::title(str_replace('_', ' ', $key)) }}</a>
                         @endforeach
                     </div>
                 </div>

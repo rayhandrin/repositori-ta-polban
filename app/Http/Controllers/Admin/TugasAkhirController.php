@@ -73,12 +73,13 @@ class TugasAkhirController extends Controller
         $filepath = [];
         foreach ($data_dokumen as $key => $dokumen) {
             $filename = $dokumen->getClientOriginalName();
-            $path = Storage::putFileAs('tugas-akhir/' . $id, $dokumen, $filename);
+            $path = Storage::disk('tugas-akhir')->putFileAs($id, $dokumen, $filename);
             $filepath[$key] = $path;
         }
         $data_tugas_akhir['filepath'] = $filepath;
 
         DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $data_dokumen, $id) {
+
             TugasAkhir::create($data_tugas_akhir);
 
             Mahasiswa::whereIn('nim', $data_mahasiswa)->update(['tugas_akhir_id' => $id]);
@@ -95,10 +96,8 @@ class TugasAkhirController extends Controller
      */
     public function show($id)
     {
-        // $data = TugasAkhir::findOrFail($id);
-        // dd($data);
         return view('admin.tugas-akhir.show', [
-            'tugas_akhir' => TugasAkhir::findOrFail($id)
+            'tugas_akhir' => TugasAkhir::with('mahasiswa')->findOrFail($id)
         ]);
     }
 

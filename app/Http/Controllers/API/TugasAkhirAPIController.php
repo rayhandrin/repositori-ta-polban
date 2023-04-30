@@ -3,31 +3,34 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Mahasiswa;
+use App\Models\ProgramStudi;
 use App\Models\TugasAkhir;
 use Illuminate\Http\Request;
 
 class TugasAkhirAPIController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function jurusan()
     {
-        $tugas_akhir = TugasAkhir::with('firstMahasiswa.programStudi:nomor,jurusan')->limit(10)->get(['id', 'judul']);
+        $jurusan = ProgramStudi::distinct('jurusan')->pluck('jurusan');
+        return response()->json($jurusan);
+    }
+
+    public function prodi($jurusan)
+    {
+        $program_studi = ProgramStudi::where('jurusan', $jurusan)->get(['nama', 'diploma', 'nomor']);
+        return response()->json($program_studi);
+    }
+
+    public function tugasAkhir($nomor_prodi)
+    {
+        $tugas_akhir = Mahasiswa::with('tugasAkhir:id,judul')->where('program_studi_nomor', $nomor_prodi)->distinct('tugas_akhir_id')->get(['tugas_akhir_id']);
         return response()->json($tugas_akhir);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function tugasAkhirDetail($id)
     {
-        $tugas_akhir = TugasAkhir::with(['dokumen', 'mahasiswa:nim,nama,tugas_akhir_id'])->find($id);
+        $tugas_akhir = TugasAkhir::with('mahasiswa:nim,nama,tugas_akhir_id')->find($id);
         return response()->json($tugas_akhir);
     }
 }

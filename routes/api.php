@@ -16,15 +16,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('guest')->prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
-    Route::post('/verify-otp', [AuthController::class, 'verifyOTP'])->name('password.otp');
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOTP']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/tugas-akhir', [TugasAkhirAPIController::class, 'index']);
-    Route::get('/tugas-akhir/{id}', [TugasAkhirAPIController::class, 'show']);
+    Route::get('/jurusan', [TugasAkhirAPIController::class, 'jurusan']);
+    Route::get('/jurusan/{jurusan}/program-studi', [TugasAkhirAPIController::class, 'prodi']);
+    Route::get('/program-studi/{nomor_prodi}/tugas-akhir', [TugasAkhirAPIController::class, 'tugasAkhir']);
+    Route::get('/tugas-akhir/{id}', [TugasAkhirAPIController::class, 'tugasAkhirDetail']);
 });

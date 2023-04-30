@@ -5,10 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Mail\SendOTP;
 use App\Models\Mahasiswa;
+use App\Models\ProgramStudi;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -21,9 +23,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nim' => 'required|numeric|digits:9|unique:mahasiswa_aktif,nim',
-            'nama' => 'required|regex:/^[a-zA-Z\s]*$/|max:50',
-            'email' => 'required|email|unique:mahasiswa_aktif,email|ends_with:polban.ac.id|max:50',
+            'nim' => 'required|integer|digits:9|unique:mahasiswa,nim',
+            'nama' => 'required|regex:/^[a-zA-Z\s\.]*$/|max:50',
+            'email' => 'required|email|unique:mahasiswa,email|ends_with:polban.ac.id|max:50',
             'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required'
         ]);
@@ -35,10 +37,20 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $data = $request->except('password_confirmation');
+        $validated = $validator->validated();
+
+        $nomor_prodi = substr($validated['nim'], 2, 4);
+        $program_studi = ProgramStudi::find($nomor_prodi);
+        if (!$program_studi) {
+            return response()->json([
+                'message' => 'Nomor program studi tidak terdaftar untuk NIM tersebut.',
+            ], 404);
+        }
+
+        $data = Arr::except($validated, 'password_confirmation');
         $data['password'] = Hash::make($data['password']);
         $data['status_aktif'] = true;
-        $data['program_studi_nomor'] = substr($data['nim'], 2, 4);
+        $data['program_studi_nomor'] = $nomor_prodi;
 
         try {
             DB::transaction(function () use ($data) {
@@ -71,9 +83,11 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $mahasiswa = Mahasiswa::find($request->nim);
+        $validated = $validator->validated();
 
-        if (!$mahasiswa || !Hash::check($request->password, $mahasiswa->password)) {
+        $mahasiswa = Mahasiswa::find($validated['nim']);
+
+        if (!$mahasiswa || !Hash::check($validated['password'], $mahasiswa->password)) {
             return response()->json(['message' => 'NIM / kata sandi salah.'], 401);
         }
 

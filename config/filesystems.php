@@ -58,7 +58,7 @@ return [
 
         'tugas-akhir' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => storage_path('app/tugas-akhir'),
             'visibility' => 'private'
         ],
 
