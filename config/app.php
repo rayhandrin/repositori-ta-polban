@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'ReTA Politeknik Negeri Bandung'),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,7 +71,6 @@ return [
 
     // 'timezone' => 'UTC',
     'timezone' => 'Asia/Jakarta',
-
 
     /*
     |--------------------------------------------------------------------------
@@ -189,6 +188,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -214,6 +214,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];

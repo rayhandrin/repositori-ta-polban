@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\TugasAkhirAPIController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('guest')->prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOTP']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/jurusan', [TugasAkhirAPIController::class, 'jurusan']);
+    Route::get('/jurusan/{jurusan}/program-studi', [TugasAkhirAPIController::class, 'prodi']);
+    Route::get('/program-studi/{nomor_prodi}/tugas-akhir', [TugasAkhirAPIController::class, 'tugasAkhir']);
+    Route::get('/tugas-akhir/{id}', [TugasAkhirAPIController::class, 'tugasAkhirDetail']);
 });
