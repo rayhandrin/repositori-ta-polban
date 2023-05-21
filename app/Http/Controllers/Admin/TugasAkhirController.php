@@ -52,11 +52,11 @@ class TugasAkhirController extends Controller
             'mahasiswa_1' => 'required',
             'mahasiswa_2' => 'nullable',
             'mahasiswa_3' => 'nullable',
-            'cover' => 'required|file',
             'bab_1' => 'required|file',
             'bab_2' => 'required|file',
             'bab_5' => 'required|file',
             'kelengkapan' => 'required|file',
+            'cover' => 'nullable|file',
             'bab_3' => 'nullable|file',
             'bab_4' => 'nullable|file',
             'opsional_1' => 'nullable|file',
@@ -68,7 +68,7 @@ class TugasAkhirController extends Controller
         $data_tugas_akhir['id'] = $id;
         $data_tugas_akhir['staf_perpus_pengunggah'] = Auth::user()->nama;
         $data_mahasiswa = Arr::only($validated, ['mahasiswa_1', 'mahasiswa_2', 'mahasiswa_3']);
-        $data_dokumen = Arr::only($validated, ['cover', 'bab_1', 'bab_2', 'bab_5', 'kelengkapan', 'bab_3', 'bab_4', 'opsional_1', 'opsional_2']);
+        $data_dokumen = Arr::only($validated, ['bab_1', 'bab_2', 'bab_5', 'kelengkapan', 'cover', 'bab_3', 'bab_4', 'opsional_1', 'opsional_2']);
 
         $filepath = [];
         foreach ($data_dokumen as $key => $dokumen) {
@@ -78,8 +78,7 @@ class TugasAkhirController extends Controller
         }
         $data_tugas_akhir['filepath'] = $filepath;
 
-        DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $data_dokumen, $id) {
-
+        DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $id) {
             TugasAkhir::create($data_tugas_akhir);
 
             Mahasiswa::whereIn('nim', $data_mahasiswa)->update(['tugas_akhir_id' => $id]);
@@ -147,7 +146,7 @@ class TugasAkhirController extends Controller
         abort_if(
             !Storage::disk('tugas-akhir')->exists($path),
             404,
-            "The file doesn't exist. Check the path."
+            "File tidak ditemukan."
         );
 
         return Storage::disk('tugas-akhir')->response($path);

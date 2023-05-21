@@ -62,6 +62,12 @@ return [
             'visibility' => 'private'
         ],
 
+        'hak-akses' => [
+            'driver' => 'local',
+            'root' => storage_path('app/hak-akses'),
+            'visibility' => 'private'
+        ],
+
     ],
 
     /*

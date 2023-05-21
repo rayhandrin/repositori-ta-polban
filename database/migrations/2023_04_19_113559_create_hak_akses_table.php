@@ -14,11 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('hak_akses', function (Blueprint $table) {
-            $table->string('id', 10)->primary();
+            $table->string('id', 14)->primary();
             $table->timestamp('diminta_pada');
             $table->boolean('status_disetujui')->nullable();
             $table->timestamp('akhir_peminjaman')->nullable();
-            $table->string('hak_aksescol', 45);
             $table->timestamps();
             $table->string('mahasiswa_nim', 9);
             $table->string('admin_username')->nullable();

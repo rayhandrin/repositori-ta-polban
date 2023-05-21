@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\HakAksesAPIController;
 use App\Http\Controllers\API\TugasAkhirAPIController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,4 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/jurusan/{jurusan}/program-studi', [TugasAkhirAPIController::class, 'prodi']);
     Route::get('/program-studi/{nomor_prodi}/tugas-akhir', [TugasAkhirAPIController::class, 'tugasAkhir']);
     Route::get('/tugas-akhir/{id}', [TugasAkhirAPIController::class, 'tugasAkhirDetail']);
+    Route::get('/hak-akses/{nim}', [HakAksesAPIController::class, 'getHakAksesMahasiswa']);
+    Route::post('/hak-akses/{nim}', [HakAksesAPIController::class, 'createHakAkses']);
+    Route::get('/hak-akses-detail/{id}', [HakAksesAPIController::class, 'getDetailHistory']);
 });
