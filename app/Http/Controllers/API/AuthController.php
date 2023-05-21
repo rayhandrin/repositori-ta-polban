@@ -123,7 +123,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'email' => 'required|email|exists:mahasiswa,email',
         ]);
 
         if ($validator->fails()) {
@@ -131,11 +131,6 @@ class AuthController extends Controller
                 'message' => 'Error validasi.',
                 'errors' => $validator->errors()
             ], 400);
-        }
-
-        $mahasiswa = Mahasiswa::find($request->email);
-        if (!$mahasiswa) {
-            return response()->json(['message' => 'Akun tidak terdaftar.'], 404);
         }
 
         try {
@@ -163,7 +158,7 @@ class AuthController extends Controller
     public function verifyOTP(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'otp' => 'required|numeric|digits:4',
+            'otp' => 'required|integer|digits:4',
         ]);
 
         if ($validator->fails()) {
@@ -181,31 +176,59 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Kode OTP valid.',
-            'email' => $result['email']
+            'email' => $result[0]->email
         ]);
     }
 
     public function resetPassword(Request $request)
     {
-        $request->validate([
-            'token' => 'required',
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'required',
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error validasi.',
+                'errors' => $validator->errors()
+            ], 400);
+        }
 
-                $user->save();
+        $validated = $validator->validated();
 
-                event(new PasswordReset($user));
-            }
-        );
+        try {
+            $mahasiswa = Mahasiswa::where('email', $validated['email'])->first();
+            $mahasiswa->password = Hash::make($validated['password']);
 
-        return response()->json(['message' => __($status)]);
+            DB::transaction(function () use ($mahasiswa) {
+                $mahasiswa->save();
+                DB::table('password_resets')->where('email', $mahasiswa->email)->delete();
+            });
+
+            return response()->json(['message' => 'Kata sandi berhasil diatur ulang.']);
+        } catch (\Throwable $t) {
+            Log::error($t->getMessage());
+
+            return response()->json([
+                'message' => 'Kata sandi gagal diatur ulang.',
+                'error' => $t->getMessage()
+            ], 500);
+        }
+
+        // $status = Password::reset(
+        //     $request->only('email', 'password', 'password_confirmation', 'token'),
+        //     function ($user, $password) {
+        //         $user->forceFill([
+        //             'password' => Hash::make($password)
+        //         ]);
+
+        //         $user->save();
+
+        //         event(new PasswordReset($user));
+        //     }
+        // );
+
+        // return response()->json(['message' => __($status)]);
     }
 }
