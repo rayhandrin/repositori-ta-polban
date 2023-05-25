@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
+/**
+ * # Controller untuk menangani fungsi-fungsi pengelolaan 
+ * # data mahasiswa oleh admin dari website.
+ */
 class MahasiswaController extends Controller
 {
     /**
@@ -43,6 +47,7 @@ class MahasiswaController extends Controller
      */
     public function store(Request $request)
     {
+        // Memvalidasi inputan pengguna.
         $validated = $request->validate([
             'nim' => 'required|integer|digits:9|unique:mahasiswa,nim',
             'nama' => 'required|regex:/^[a-zA-Z\s\.]*$/',
@@ -51,6 +56,10 @@ class MahasiswaController extends Controller
             'status_aktif' => 'nullable|required_with:email'
         ]);
 
+        /**
+         * Mengecek apakah nomor prodi dari nim yang diinputkan terdaftar pada sistem.
+         * Jika tidak, mahasiswa tidak bisa mendaftar.
+         */
         $nomor_prodi = substr($validated['nim'], 2, 4);
         $program_studi = ProgramStudi::find($nomor_prodi);
         if (!$program_studi) {
@@ -60,9 +69,18 @@ class MahasiswaController extends Controller
         }
 
         $validated['program_studi_nomor'] = $nomor_prodi;
+        /**
+         * Mengecek apakah terdapat password pada request.
+         * Jika ada, Hash passwordnya.
+         */
         $validated['password'] = (isset($validated['password'])) ? Hash::make($validated['password']) : null;
 
         try {
+            /**
+             * Mengecek apakah ada status_aktif pada request.
+             * status_aktif menunjukkan mahasiswa tersebut alumni atau aktif.
+             * Jika ada status_aktif, kirim verifikasi akun ke email mahasiswa.
+             */
             if (array_key_exists('status_aktif', $validated)) {
                 DB::transaction(function () use ($validated) {
                     $mahasiswa = Mahasiswa::create($validated);

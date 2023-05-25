@@ -12,16 +12,26 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * # Controller untuk menangani fungsi-fungsi pengaksesan file TA yang dibatasi.
+ */
 class HakAksesAPIController extends Controller
 {
+    /**
+     * Fungsi untuk mendapatkan history pengajuan hak akses mahasiswa berdasarkan nim.
+     */
     public function getHakAksesMahasiswa($nim)
     {
         $hak_akses = HakAkses::with('tugasAkhir:id,judul')->where('mahasiswa_nim', $nim)->get(['id', 'tugas_akhir_id']);
         return response()->json($hak_akses);
     }
 
+    /**
+     * Fungsi untuk membuat pengajuan hak akses oleh mahasiswa.
+     */
     public function createHakAkses(Request $request, $nim)
     {
+        // Memvalidasi inputan pengguna.
         $validator = Validator::make($request->all(), [
             'tugas_akhir_id' => 'required|integer|digits:14',
             'foto_surat' => 'required|image'
@@ -36,6 +46,7 @@ class HakAksesAPIController extends Controller
 
         $validated = $validator->validated();
 
+        // Mengecek apakah TA yang diajukan ada pada sistem.
         $tugas_akhir = TugasAkhir::find($validated['tugas_akhir_id']);
         if (!$tugas_akhir) {
             return response()->json([
@@ -43,6 +54,7 @@ class HakAksesAPIController extends Controller
             ], 404);
         }
 
+        // Menyiapkan data hak akses.
         $id = date('YmdHis');
         $data = [
             'id' => $id,
@@ -52,7 +64,12 @@ class HakAksesAPIController extends Controller
         ];
 
         try {
+            // Menyiapkan filename berdasarkan id hak akses (datetime dibuat).
             $filename = $id . '.' . $validated['foto_surat']->getClientOriginalExtension();
+            /**
+             * Menyimpan data hak akses dan mengupload file gambar ke server.
+             * Dibungkus dalam DB Transaction agar menjadi transaksi yang atomic (tunggal).
+             */
             DB::transaction(function () use ($data, $nim, $validated, $filename) {
                 HakAkses::create($data);
                 Storage::disk('hak-akses')->putFileAs($nim, $validated['foto_surat'], $filename);
@@ -69,6 +86,9 @@ class HakAksesAPIController extends Controller
         }
     }
 
+    /**
+     * Fungsi menampilkan detail history pengajuan.
+     */
     public function getDetailHistory($id)
     {
         $hak_akses = HakAkses::find($id);
