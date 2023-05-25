@@ -35,7 +35,7 @@ class HakAkses extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'diminta_pada', 'status_disetujui', 'akhir_peminjaman', 'hak_aksescol', 'mahasiswa_nim', 'tugas_akhir_id', 'admin_username'];
+    protected $fillable = ['id', 'diminta_pada', 'status_disetujui', 'akhir_peminjaman', 'mahasiswa_nim', 'tugas_akhir_id', 'admin_username'];
 
     /**
      * The attributes that should be cast.

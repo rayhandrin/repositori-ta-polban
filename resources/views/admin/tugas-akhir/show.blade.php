@@ -48,12 +48,14 @@
                         <div class="mb-3">
                             <label for="created_at" class="form-label">Ditambahkan pada</label>
                             <input type="text" class="form-control" id="created_at"
-                                value="{{ $tugas_akhir->created_at->format('d F Y - H:i:s') }}">
+                                value="{{ $tugas_akhir->created_at ? $tugas_akhir->created_at->format('d F Y - H:i:s') : '' }}"
+                                readonly>
                         </div>
                         <div class="mb-4">
                             <label for="updated_at" class="form-label">Diperbarui pada</label>
                             <input type="text" class="form-control" id="updated_at"
-                                value="{{ $tugas_akhir->updated_at->format('d F Y - H:i:s') }}">
+                                value="{{ $tugas_akhir->created_at ? $tugas_akhir->updated_at->format('d F Y - H:i:s') : '' }}"
+                                readonly>
                         </div>
                     </div>
                     <div class="col-4">

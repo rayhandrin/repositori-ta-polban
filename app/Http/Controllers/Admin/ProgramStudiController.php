@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
+/**
+ * # Controller untuk menangani fungsi-fungsi pengelolaan 
+ * # data program studi oleh admin dari website.
+ */
 class ProgramStudiController extends Controller
 {
     /**
@@ -41,6 +45,7 @@ class ProgramStudiController extends Controller
      */
     public function store(Request $request)
     {
+        // Memvalidasi inputan pengguna.
         $validated = $request->validate([
             'nomor' => 'required|integer|digits:4|unique:program_studi,nomor',
             'nama' => 'required|regex:/^[a-zA-Z\s\'\/]*$/||unique:program_studi,nama',
@@ -52,6 +57,7 @@ class ProgramStudiController extends Controller
             ],
         ]);
 
+        // Meng-insert data program studi.
         ProgramStudi::create($validated);
 
         return redirect()->route('admin.program-studi.index')->with('message', 'Data program studi berhasil ditambah!');
@@ -91,6 +97,7 @@ class ProgramStudiController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Memvalidasi inputan pengguna.
         $validated = $request->validate([
             'nomor' => [
                 'required', 'integer', 'digits:4',
@@ -111,6 +118,7 @@ class ProgramStudiController extends Controller
             ],
         ]);
 
+        // Meng-update data program studi.
         $program_studi = ProgramStudi::find($id);
         $program_studi->update($validated);
 
@@ -130,11 +138,18 @@ class ProgramStudiController extends Controller
         return redirect()->route('admin.program-studi.index')->with('message', 'Data program studi berhasil dihapus!');
     }
 
+    /**
+     * Menampilkan halaman untuk mengimport data program studi.
+     */
     public function importPage()
     {
         return view('admin.program-studi.import');
     }
 
+    /**
+     * Fungsi untuk men-download template file untuk import data
+     * program studi.
+     */
     public function downloadTemplate()
     {
         try {
@@ -144,6 +159,10 @@ class ProgramStudiController extends Controller
         }
     }
 
+    /**
+     * Fungsi untuk meng-import / meng-insert data program studi
+     * dari file template (bulk insert).
+     */
     public function import(Request $request)
     {
         try {

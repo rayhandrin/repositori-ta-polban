@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * # Controller untuk menangani fungsi-fungsi pengelolaan 
+ * # data tugas akhir oleh admin dari website.
+ */
 class TugasAkhirController extends Controller
 {
     /**
@@ -42,6 +46,7 @@ class TugasAkhirController extends Controller
      */
     public function store(Request $request)
     {
+        // Memvalidasi inputan pengguna.
         $validated = $request->validate([
             'judul' => 'required|unique:tugas_akhir,judul',
             'tahun' => 'nullable|integer|digits:4',
@@ -52,24 +57,29 @@ class TugasAkhirController extends Controller
             'mahasiswa_1' => 'required',
             'mahasiswa_2' => 'nullable',
             'mahasiswa_3' => 'nullable',
-            'cover' => 'required|file',
             'bab_1' => 'required|file',
             'bab_2' => 'required|file',
             'bab_5' => 'required|file',
             'kelengkapan' => 'required|file',
+            'cover' => 'nullable|file',
             'bab_3' => 'nullable|file',
             'bab_4' => 'nullable|file',
             'opsional_1' => 'nullable|file',
             'opsional_2' => 'nullable|file',
         ]);
 
+        // Memisahkan data tugas akhir, mahasiswa, dan dokumen dari request.
         $data_tugas_akhir = Arr::only($validated, ['judul', 'tahun', 'kata_kunci', 'kontributor_1', 'kontributor_2', 'kontributor_3']);
         $id = date('YmdHis');
         $data_tugas_akhir['id'] = $id;
         $data_tugas_akhir['staf_perpus_pengunggah'] = Auth::user()->nama;
         $data_mahasiswa = Arr::only($validated, ['mahasiswa_1', 'mahasiswa_2', 'mahasiswa_3']);
-        $data_dokumen = Arr::only($validated, ['cover', 'bab_1', 'bab_2', 'bab_5', 'kelengkapan', 'bab_3', 'bab_4', 'opsional_1', 'opsional_2']);
+        $data_dokumen = Arr::only($validated, ['bab_1', 'bab_2', 'bab_5', 'kelengkapan', 'cover', 'bab_3', 'bab_4', 'opsional_1', 'opsional_2']);
 
+        /**
+         * Menyimpan file yang diupload, mengambil path-nya berdasarkan 
+         * id tugas akhir untuk disimpan ke database.
+         */
         $filepath = [];
         foreach ($data_dokumen as $key => $dokumen) {
             $filename = $dokumen->getClientOriginalName();
@@ -78,8 +88,11 @@ class TugasAkhirController extends Controller
         }
         $data_tugas_akhir['filepath'] = $filepath;
 
-        DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $data_dokumen, $id) {
-
+        /**
+         * Menyimpan data tugas akhir, dan meng-update mahasiswa terkait.
+         * Dibungkus dalam DB Transaction agar menjadi transaksi yang atomic (tunggal).
+         */
+        DB::transaction(function () use ($data_tugas_akhir, $data_mahasiswa, $id) {
             TugasAkhir::create($data_tugas_akhir);
 
             Mahasiswa::whereIn('nim', $data_mahasiswa)->update(['tugas_akhir_id' => $id]);
@@ -132,6 +145,10 @@ class TugasAkhirController extends Controller
      */
     public function destroy($id)
     {
+        /**
+         * Menghapus file-file tugas akhir dari server.
+         * Menghapus data tugas akhir dari database.
+         */
         try {
             Storage::disk('tugas-akhir')->deleteDirectory($id);
             TugasAkhir::destroy($id);
@@ -142,14 +159,20 @@ class TugasAkhirController extends Controller
         return redirect()->route('admin.tugas-akhir.index')->with('message', 'Data tugas akhir berhasil dihapus!');
     }
 
+    /**
+     * Fungsi untuk menampilkan file tugas akhir mahasiswa
+     * ke halaman admin berdasarkan path.
+     */
     public function viewFile($path)
     {
+        // Jika file tidak ditemukan, munculkan halaman error.
         abort_if(
             !Storage::disk('tugas-akhir')->exists($path),
             404,
-            "The file doesn't exist. Check the path."
+            "File tidak ditemukan."
         );
 
+        // Mengembalikan respon file jika file ditemukan.
         return Storage::disk('tugas-akhir')->response($path);
     }
 }

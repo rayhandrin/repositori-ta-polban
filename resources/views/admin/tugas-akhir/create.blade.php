@@ -93,8 +93,7 @@
                         </div>
                         <div class="col-5">
                             <div class="mb-3">
-                                <label for="cover" class="form-label">Cover<span
-                                        class="text-danger ms-1">*</span></label>
+                                <label for="cover" class="form-label">Cover</label>
                                 <input class="form-control @error('cover') is-invalid @enderror" type="file"
                                     id="cover" name="cover" accept=".pdf">
                                 @error('cover')

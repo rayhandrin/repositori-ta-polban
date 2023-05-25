@@ -36,7 +36,7 @@ class MahasiswaDataTable extends DataTable
             })
             ->addColumn('aksi', function ($row) {
                 $btn = '<a href="' . route('admin.mahasiswa.show', $row->nim) . '" class="btn btn-info me-2">Detail</a>';
-                $btn .= '<a href="' . route('admin.mahasiswa.edit', $row->nim) . '" class="btn btn-warning me-1">Ubah</a>';
+                $btn .= '<a href="' . route('admin.mahasiswa.edit', $row->nim) . '" class="btn btn-warning me-1 disabled">Ubah</a>';
                 $btn .= '<form action="' . route('admin.mahasiswa.destroy', $row->nim) . '" method="post" class="d-inline">
                             ' . csrf_field() . '
                             <input type="hidden" name="_method" value="delete">
